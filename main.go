@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"net/smtp"
 
 	"github.com/aziemp66/go-mail/helper"
@@ -19,7 +21,15 @@ func sendMailSimple(mail string, appPassword string, to []string, subject string
 	}
 }
 
-func sendMailSimpleHtml(mail string, appPassword string, to []string, subject string, html string) {
+func sendMailSimpleHtml(mail string, appPassword string, to []string, subject string, templatePath string) {
+	//get html
+	var body bytes.Buffer
+	t, err := template.ParseFiles(templatePath)
+
+	t.Execute(&body, map[string]string{
+		"Name": "Azie",
+	})
+
 	auth := smtp.PlainAuth("", mail, appPassword, "smtp.gmail.com")
 
 	header := make(map[string]string)
@@ -35,9 +45,9 @@ func sendMailSimpleHtml(mail string, appPassword string, to []string, subject st
 		message += fmt.Sprintf("%s: %s\r", k, v)
 	}
 
-	message += "\r" + html
+	message += "\r" + body.String()
 
-	err := smtp.SendMail("smtp.gmail.com:587", auth, mail, to, []byte(message))
+	err = smtp.SendMail("smtp.gmail.com:587", auth, mail, to, []byte(message))
 
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -49,5 +59,5 @@ func main() {
 	cfg := helper.LoadConfig()
 
 	// sendMailSimple(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "Hello", "Welcome to SMTP With Go")
-	sendMailSimpleHtml(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"aziemp55@gmail.com"}, "Hello", "<h1>Welcome to SMTP With Go</h1><p>My Name Is Gustavo Fring, You Can Call me Gus</p>")
+	sendMailSimpleHtml(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"aziemp55@gmail.com"}, "Hello", "./template/invoice.gohtml")
 }
