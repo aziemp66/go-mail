@@ -7,6 +7,7 @@ import (
 	"net/smtp"
 
 	"github.com/aziemp66/go-mail/helper"
+	"github.com/aziemp66/go-mail/mail"
 	"gopkg.in/gomail.v2"
 )
 
@@ -96,5 +97,12 @@ func main() {
 
 	// sendMailSimple(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "Hello", "Welcome to SMTP With Go")
 	// sendMailSimpleHtml(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"aziemp55@gmail.com"}, "Hello", "./template/invoice.gohtml")
-	sendGoMail(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"gonriki6@gmail.com"}, "GoMail, The Third Party Mail Server", "./template/invoice.gohtml", "./picture/92568390.jpg")
+	// sendGoMail(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "GoMail, The Third Party Mail Server", "./template/invoice.gohtml", "./picture/92568390.jpg")
+
+	sender := mail.New(cfg.APP_EMAIL, cfg.APP_PASSWORD, "smtp.gmail.com", "587")
+	m := mail.NewMessage("Go Mail With net/http", "")
+	m.To = []string{"aziemp55@gmail.com"}
+	m.AttachFile("./picture/92568390.jpg")
+
+	sender.Send(m)
 }
