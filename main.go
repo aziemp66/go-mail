@@ -7,6 +7,7 @@ import (
 	"net/smtp"
 
 	"github.com/aziemp66/go-mail/helper"
+	"gopkg.in/gomail.v2"
 )
 
 func sendMailSimple(mail string, appPassword string, to []string, subject string, body string) {
@@ -30,6 +31,11 @@ func sendMailSimpleHtml(mail string, appPassword string, to []string, subject st
 		"Name": "Azie",
 	})
 
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	auth := smtp.PlainAuth("", mail, appPassword, "smtp.gmail.com")
 
 	header := make(map[string]string)
@@ -51,13 +57,44 @@ func sendMailSimpleHtml(mail string, appPassword string, to []string, subject st
 
 	if err != nil {
 		fmt.Println("Error: ", err)
+		return
 	}
 
+}
+
+func sendGoMail(mail string, appPassword string, to []string, subject string, templatePath string, attachmentPath string) {
+	//get html
+	var body bytes.Buffer
+	t, err := template.ParseFiles(templatePath)
+
+	t.Execute(&body, map[string]string{
+		"Name": "Azie",
+	})
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	//send with gomail
+	m := gomail.NewMessage()
+	m.SetHeader("From", mail)
+	m.SetHeader("To", to...)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", body.String())
+	m.Attach(attachmentPath)
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, mail, appPassword)
+
+	if err := d.DialAndSend(m); err != nil {
+		panic(err)
+	}
 }
 
 func main() {
 	cfg := helper.LoadConfig()
 
 	// sendMailSimple(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "Hello", "Welcome to SMTP With Go")
-	sendMailSimpleHtml(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"aziemp55@gmail.com"}, "Hello", "./template/invoice.gohtml")
+	// sendMailSimpleHtml(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"aziemp55@gmail.com"}, "Hello", "./template/invoice.gohtml")
+	sendGoMail(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"gonriki6@gmail.com"}, "GoMail, The Third Party Mail Server", "./template/invoice.gohtml", "./picture/92568390.jpg")
 }
