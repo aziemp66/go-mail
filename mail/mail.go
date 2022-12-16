@@ -72,11 +72,16 @@ func (m *Message) ToBytes() []byte {
 	if withAttachments {
 		buf.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=%s\n", boundary))
 		buf.WriteString(fmt.Sprintf("--%s\n", boundary))
+		buf.WriteString("Content-Transfer-Encoding: 8bit \n")
+		buf.WriteString("Content-Type: text/html; charset=utf-8\n")
+		buf.WriteString("MIME-Version: 1.0\n")
+		buf.WriteString("Content-Transfer-Encoding: 8bit \n")
 	} else {
-		buf.WriteString("Content-Type: text/plain; charset=utf-8\n")
+		buf.WriteString("Content-Type: text/html; charset=utf-8\n")
 	}
 
 	buf.WriteString(m.Body)
+
 	if withAttachments {
 		for k, v := range m.Attachments {
 			buf.WriteString(fmt.Sprintf("\n\n--%s\n", boundary))

@@ -100,9 +100,9 @@ func main() {
 	// sendGoMail(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "GoMail, The Third Party Mail Server", "./template/invoice.gohtml", "./picture/92568390.jpg")
 
 	sender := mail.New(cfg.APP_EMAIL, cfg.APP_PASSWORD, "smtp.gmail.com", "587")
-	m := mail.NewMessage("Go Mail With net/http", "")
+	m := mail.NewMessage("Test Go Mail", "<h1>Hello World</h1>")
 	m.To = []string{"aziemp55@gmail.com"}
 	m.AttachFile("./picture/92568390.jpg")
 
-	sender.Send(m)
+	fmt.Println(sender.Send(m))
 }
