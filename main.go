@@ -98,9 +98,20 @@ func main() {
 	// sendMailSimple(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "Hello", "Welcome to SMTP With Go")
 	// sendMailSimpleHtml(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"aziemp55@gmail.com"}, "Hello", "./template/invoice.gohtml")
 	// sendGoMail(cfg.APP_EMAIL, cfg.APP_PASSWORD, []string{"azielala55@gmail.com"}, "GoMail, The Third Party Mail Server", "./template/invoice.gohtml", "./picture/92568390.jpg")
+	//get html
+	var body bytes.Buffer
+	t, err := template.ParseFiles("./template/invoice.gohtml")
+
+	if err != nil {
+		panic(err)
+	}
+
+	t.Execute(&body, map[string]string{
+		"Name": "Azie",
+	})
 
 	sender := mail.New(cfg.APP_EMAIL, cfg.APP_PASSWORD, "smtp.gmail.com", "587")
-	m := mail.NewMessage("Test Go Mail", "<h1>Hello World</h1>")
+	m := mail.NewMessage("Test Go Mail", body.String())
 	m.To = []string{"aziemp55@gmail.com"}
 	m.AttachFile("./picture/92568390.jpg")
 
